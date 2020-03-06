@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:administracion/screens/salesofday.dart';
 import 'package:intl/intl.dart';
 import 'package:administracion/screens/picktwodates.dart';
+import 'package:administracion/screens/expenses.dart';
 
 class Menu extends StatelessWidget {
   @override
@@ -74,24 +75,44 @@ class Menu extends StatelessWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => PickTwoDate("TotalMonth")));
+                                        builder: (context) =>
+                                            PickTwoDate("TotalMonth")));
                               },
                               child: Text("Total Mensual"))),
                     ])),
-                Center(
-                    child: RaisedButton(
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(28.0),
-                            side: BorderSide(color: Colors.blue)),
-                        textColor: Colors.black,
-                        color: Colors.white,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PickTwoDate("Excel")));
-                        },
-                        child: Text("Exportar")))
+                Padding(
+                    padding: EdgeInsets.only(top: 25),
+                    child: Row(children: <Widget>[
+                      Expanded(
+                          child: RaisedButton(
+                              shape: new RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(28.0),
+                                  side: BorderSide(color: Colors.blue)),
+                              textColor: Colors.black,
+                              color: Colors.white,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Expenses()));
+                              },
+                              child: Text("Gastos"))),
+                      Expanded(
+                          child: RaisedButton(
+                              shape: new RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(28.0),
+                                  side: BorderSide(color: Colors.blue)),
+                              textColor: Colors.black,
+                              color: Colors.white,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PickTwoDate("Excel")));
+                              },
+                              child: Text("Exportar")))
+                    ]))
               ]))),
     );
   }

@@ -9,6 +9,7 @@ class PickDate extends StatefulWidget {
 }
 
 class PickDateState extends State {
+  String datesText = '';
   String dates = '';
   DateTime dateValidation;
 
@@ -33,7 +34,8 @@ class PickDateState extends State {
                     maxTime: DateTime(2028, 12, 31),
                     onChanged: (date) {}, onConfirm: (date) {
                   setState(() {
-                    dates = dateToString(date);
+                    datesText = dateToString(date);
+                    dates = dateToBd(date);
                     dateValidation = date;
                   });
                 }, currentTime: DateTime.now(), locale: LocaleType.es);
@@ -42,7 +44,7 @@ class PickDateState extends State {
                 'Elegir fecha a buscar',
                 style: TextStyle(color: Colors.black),
               )),
-          Container(child: Text(dates)),
+          Container(child: Text(datesText)),
           RaisedButton(
             color: Colors.black,
             child: Text("Buscar"),
@@ -62,6 +64,11 @@ class PickDateState extends State {
   String dateToString(DateTime dateAux) {
           var x = dateAux.day.toString() +'/' +dateAux.month.toString() +'/' +dateAux.year.toString();
           return x;
+    }
+
+    String dateToBd(DateTime dateAux){
+      var x = dateAux.month.toString()+'/' +dateAux.day.toString()  +'/' +dateAux.year.toString();
+      return x;
     }
 
   bool checkDates() {

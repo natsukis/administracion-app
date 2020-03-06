@@ -4,6 +4,8 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:administracion/screens/excel.dart';
 import 'package:intl/intl.dart';
 
+import 'expensetotal.dart';
+
 class PickTwoDate extends StatefulWidget {
   String screen;
   @override
@@ -93,7 +95,7 @@ class PickTwoDateState extends State {
   }
 
   bool checkDates() {
-    if (dateTo == null || dateFrom == null || dateFrom.isAfter(dateTo)) {
+    if (dateTo == null || dateFrom == null || dateFrom.add(new Duration(days: -1)).isAfter(dateTo.add(new Duration(days: 1)))) {
       return false;
     } else {
       return true;
@@ -110,10 +112,17 @@ class PickTwoDateState extends State {
         MaterialPageRoute(builder: (context) => TotalMonth(dateFrom, dateTo)));
   }
 
+    void navigateExpenseTotal() async {
+    bool result = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ExpenseTotal(dateFrom, dateTo)));
+  }
+
   Widget alert() {
     if (checkDates()) {
       if (screen == "Excel") {
         navigateExcel();
+      }else if(screen == "Expenses"){
+        navigateExpenseTotal();
       }else{
         navigateTotalMonth();
       }      

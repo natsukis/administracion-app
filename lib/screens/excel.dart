@@ -3,8 +3,10 @@ import 'package:administracion/model/product.dart';
 import 'package:administracion/util/dbhelper.dart';
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:downloads_path_provider/downloads_path_provider.dart'; 
+import 'package:permission_handler/permission_handler.dart'; 
+
 
 import 'loadandviewcsvpage.dart';
 
@@ -124,10 +126,17 @@ class ExcelState extends State {
 
     String csv = const ListToCsvConverter().convert(csvData);
 
-    final String dir = (await getApplicationDocumentsDirectory()).path;
+    final PermissionHandler _permissionHandler = PermissionHandler();
+    var result = await _permissionHandler.requestPermissions([PermissionGroup.storage]);
+      if (result[PermissionGroup.storage] == PermissionStatus.granted) {
+      // permission was granted
+
+      
+
+    final String dir = (await DownloadsPathProvider.downloadsDirectory).path;
     final String path =
         '$dir/venta' + convertDatePath(products[0].date) + '.csv';
-
+      
     // create file
     final File file = File(path);
     // Save csv string using default configuration
@@ -140,7 +149,7 @@ class ExcelState extends State {
       MaterialPageRoute(
         builder: (_) => LoadAndViewCsvPage(path: path),
       ),
-    );
+    );}
   }
 
   String convertDatePath(String aux) {
@@ -155,7 +164,7 @@ class ExcelState extends State {
   bool comparedate(String date) {
     DateTime dateD = new DateFormat().add_yMd().parse(date);
 
-    if (dateD.isAfter(dateFrom) && dateD.isBefore(dateTo)) {
+    if (dateD.isAfter(dateFrom.add(new Duration(days: -1))) && dateD.isBefore(dateTo.add(new Duration(days: 1)))) {
       return true;
     } else {
       return false;

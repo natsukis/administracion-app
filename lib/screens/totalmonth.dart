@@ -19,9 +19,11 @@ class TotalMonthState extends State {
   List<Product> products;
   List<Product> tarjetproduct;
   List<Product> efectproduct;
+  List<Product> expenseproduct;
   int efectcount = 0;
   int tarjetcount = 0;
   int count = 0;
+  int expensecount = 0;
   String date;
 
   @override
@@ -31,11 +33,13 @@ class TotalMonthState extends State {
       getData();
       getTarjetData();
       getEfectData();
+      getExpensetData();
     }
     return Scaffold(
         appBar: AppBar(
-            title: Text(stringToDate(dateFrom) + " a " + stringToDate(dateTo)),
-            backgroundColor: Colors.black,),
+          title: Text(stringToDate(dateFrom) + " a " + stringToDate(dateTo)),
+          backgroundColor: Colors.black,
+        ),
         floatingActionButton: FloatingActionButton(
             child: Text("Volver"),
             backgroundColor: Colors.black,
@@ -50,12 +54,30 @@ class TotalMonthState extends State {
                   child: Column(children: <Widget>[
                     Row(children: <Widget>[
                       Expanded(
-                        child: Text("Ventas del mes: "),
+                        child: Text("Ventas del mes BRUTO: "),
                       ),
                       Expanded(
                           child:
                               Text('\$' + calculateTotalSales(products, count)))
                     ]),
+                    Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: Row(children: <Widget>[
+                          Expanded(child: Text("Gastos del mes:")),
+                          Expanded(
+                              child: Text('\$' +
+                                  calculateTotalSales(
+                                      expenseproduct, expensecount)))
+                        ])),
+                    Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: Row(children: <Widget>[
+                          Expanded(child: Text("Ventas del mes NETO: ")),
+                          Expanded(
+                              child: Text('\$' +
+                                  calculateTotal(products, count,
+                                      expenseproduct, expensecount)))
+                        ])),
                     Padding(
                         padding: EdgeInsets.only(top: 30),
                         child: Row(children: <Widget>[
@@ -95,7 +117,7 @@ class TotalMonthState extends State {
         int notInRange = 0;
         for (int i = 0; i < count; i++) {
           Product producAux = Product.fromObject(result[i]);
-          if (comparedate(producAux.date)) {
+          if (comparedate(producAux.date) && producAux.method != "Pago") {
             productList.add(producAux);
           } else {
             notInRange = notInRange + 1;
@@ -115,8 +137,8 @@ class TotalMonthState extends State {
 
   bool comparedate(String date) {
     DateTime dateD = new DateFormat().add_yMd().parse(date);
-
-    if (dateD.isAfter(dateFrom) && dateD.isBefore(dateTo)) {
+    if (dateD.isAfter(dateFrom.add(new Duration(days: -1))) &&
+        dateD.isBefore(dateTo.add(new Duration(days: 1)))) {
       return true;
     } else {
       return false;
@@ -175,6 +197,50 @@ class TotalMonthState extends State {
     });
   }
 
+  void getExpensetData() {
+    final dbFuture = helper.initializeDb();
+    dbFuture.then((result) {
+      final productsFuture = helper.getProduct();
+      productsFuture.then((result) {
+        List<Product> productList = List<Product>();
+        expensecount = result.length;
+        int notToday = 0;
+        for (int i = 0; i < expensecount; i++) {
+          Product producAux = Product.fromObject(result[i]);
+          if (comparedate(producAux.date) &&
+              (producAux.method == "Pago")) {
+            productList.add(producAux);
+          } else {
+            notToday = notToday + 1;
+          }
+        }
+        setState(() {
+          expenseproduct = productList;
+          expensecount = expensecount - notToday;
+        });
+      });
+    });
+  }
+
+  String calculateTotal(
+    List<Product> products,
+    int count,
+    List<Product> expenseproducts,
+    int countexpense,
+  ) {
+    var total = 0;
+    for (var i = 0; i < count; i++) {
+      total = total + products[i].price;
+    }
+
+    var totalexpense = 0;
+    for (var i = 0; i < countexpense; i++) {
+      totalexpense = totalexpense + expenseproducts[i].price;
+    }
+
+    return (total - totalexpense).toString();
+  }
+
   String calculateTotalSales(List<Product> products, int count) {
     var total = 0;
     for (var i = 0; i < count; i++) {
@@ -212,9 +278,6 @@ class TotalMonthState extends State {
           majorica = majorica + products[i].price;
           break;
         case "Otro":
-          otro = otro + products[i].price;
-          break;
-        default:
           otro = otro + products[i].price;
           break;
       }
