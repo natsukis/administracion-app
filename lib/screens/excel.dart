@@ -110,7 +110,7 @@ class ExcelState extends State {
     List<List<String>> csvData;
     List<String> aux;
     csvData = [
-      ['Article', 'Price', 'Quantity', 'Method']
+      ['Articulo', 'Precio', 'Cantidad', 'Metodo']
     ];
 
     for (var item in products) {

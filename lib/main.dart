@@ -29,21 +29,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-        children: <Widget>[
-          Image.asset(
-            "images/honorablack.jpg",
-            height: 250,//MediaQuery.of(context).size.height,
-            width: 300,//MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-            alignment:Alignment.center
-          ),Scaffold(
-            backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-                elevation: 0.0,
-          title: Text(widget.title),
-        ),
-        body: Menu())]);
+    return Menu();
   }
 }
